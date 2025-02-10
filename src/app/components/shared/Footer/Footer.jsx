@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Image from "next/image"; // Import Next.js Image component
-import logo from "../../../../../public/logo2.svg"; // Adjust the path if needed
+import Image from "next/image"; 
+import logo from "../../../../../public/logo2.svg"; 
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-indigo-900 text-white p-8 mt-12">
+    <footer className="bg-gradient-to-r from-blue-700 to-indigo-900 text-white p-10 ">
       <div className="container mx-auto grid md:grid-cols-3 gap-6">
         {/* Branding with Logo */}
         <div>
@@ -20,7 +20,7 @@ const Footer = () => {
         </div>
 
         {/* Quick Links */}
-        <div>
+        <div className="ms-8">
           <h3 className="text-lg font-semibold">Quick Links</h3>
           <ul className="mt-2 space-y-2">
             <li><Link href="/features" className="hover:text-orange-400">Features</Link></li>
