@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 const Features = () => {
-    return (
-        <div>
-             <section className="py-16 bg-white text-center">
+  return (
+    <div>
+      <section className="py-16 bg-white text-center">
         <div className="container mx-auto px-6">
           {/* Section Title */}
           <h3 className="text-orange-500 text-lg font-semibold">About</h3>
@@ -76,8 +76,8 @@ const Features = () => {
           </div>
         </div>
       </section>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default Features;
