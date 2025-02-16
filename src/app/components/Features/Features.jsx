@@ -1,5 +1,6 @@
+import Image from "next/image";
 import React from "react";
-
+import Img1 from "../../../../public/1.jpg";
 const Features = () => {
   return (
     <div>
@@ -15,11 +16,7 @@ const Features = () => {
           <div className="grid md:grid-cols-3 gap-12 mt-12">
             {/* Feature 1 */}
             <div className="flex flex-col items-center text-center">
-              <img
-                src="/path-to-image1.svg"
-                alt="Productivity Icon"
-                className="w-16 h-16"
-              />
+            <Image src={Img1} alt="Professional" className="w-12 h-12 mt-6" />
               <hr className="w-12 border-t-2 border-gray-300 my-4" />
               <h3 className="text-xl font-semibold text-gray-900">
                 Maximize Your Productivity
@@ -32,11 +29,7 @@ const Features = () => {
 
             {/* Feature 2 */}
             <div className="flex flex-col items-center text-center">
-              <img
-                src="/path-to-image2.svg"
-                alt="Collaboration Icon"
-                className="w-16 h-16"
-              />
+            <Image src={Img1} alt="Professional" className="w-12 h-12 mt-6" />
               <hr className="w-12 border-t-2 border-gray-300 my-4" />
               <h3 className="text-xl font-semibold text-gray-900">
                 Collaboration Made Easy
@@ -49,11 +42,7 @@ const Features = () => {
 
             {/* Feature 3 */}
             <div className="flex flex-col items-center text-center">
-              <img
-                src="/path-to-image3.svg"
-                alt="Optimization Icon"
-                className="w-16 h-16"
-              />
+            <Image src={Img1} alt="Professional" className="w-12 h-12 mt-6" />
               <hr className="w-12 border-t-2 border-gray-300 my-4" />
               <h3 className="text-xl font-semibold text-gray-900">
                 Monitor & Optimize Performance

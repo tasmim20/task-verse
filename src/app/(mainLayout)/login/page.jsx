@@ -49,7 +49,7 @@ const LoginPage = () => {
           <div className="flex flex-col space-y-4">
             <button
               className="flex items-center justify-center bg-white text-gray-800 py-3 rounded-lg hover:bg-gray-200 transition"
-              onClick={() => signIn("google")}
+              onClick={() => signIn("google", { callbackUrl: "/taskControl" })}
             >
               <FaGoogle className="mr-2" /> Sign in with Google
             </button>

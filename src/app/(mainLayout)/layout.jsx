@@ -1,4 +1,5 @@
-import"../globals.css"
+"use client "
+import "../globals.css"
 import Navbar from "../components/shared/Navbar/Navbar"
 import Footer from "../components/shared/Footer/Footer"
 export const metadata = {
@@ -16,4 +17,4 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
-}
+};

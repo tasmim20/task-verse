@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -15,12 +15,19 @@ const authOptions = {
   ],
   callbacks: {
     async session({ session, token }) {
-      session.user.id = token.sub;
+      console.log("Session Token:", token);
+      console.log("Session User:", session.user);
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      console.log("Redirecting to:", baseUrl);
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/taskControl`; 
     },
   },
 };
 
-// Correct export format for Next.js 13+ (App Router)
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST }; 
