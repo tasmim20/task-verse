@@ -1,20 +1,25 @@
+"use client";
+import Image from "next/image";
 import HeroImage from "../../../public/pic.jpg";
 import Features from "../components/Features/Features";
 import Workspace from "../components/Workspace/Workspace";
+import Extra from "../components/extra/extra";
 export default function Home() {
   return (
     <>
-      <section
-        className="relative text-white text-center py-24 lg:py-60 bg-cover bg-center"
-        style={{ backgroundImage: `url(${HeroImage.src})` }}
-      >
+      <section className="relative text-white text-center py-24 lg:py-60 bg-cover bg-center">
+        <Image
+          src={HeroImage}
+          alt="Hero"
+          layout="fill"
+          objectFit="cover"
+          className="absolute inset-0 z-0"
+        />
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 container mx-auto px-6 p-10 rounded-lg">
           <h1 className="text-4xl font-bold">
-            Productivity is at the{" "}
-            <span className="text-orange-400">
-              Heart Of Every Organization!
-            </span>
+            Productivity is at the {" "}
+            <span className="text-orange-400">Heart Of Every Organization!</span>
           </h1>
           <p className="mt-4 text-lg">
             Enhancing your organization’s productivity is our priority.
@@ -38,8 +43,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <Features></Features>
-      <Workspace></Workspace>
+      <Features />
+      <Workspace />
+      <Extra/>
     </>
   );
 }

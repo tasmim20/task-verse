@@ -1,31 +1,31 @@
 "use client";
+
 import { useState, useEffect } from "react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "../../../../../public/logo2.svg"; // Adjust the path to match your logo file
+import { useRouter } from "next/navigation"; // To handle redirect after logout
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { data: session } = useSession(); // Check if session exists
+  const router = useRouter(); // For redirect after log out
 
-  // Handle scroll event to change navbar color
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) { // Adjust the scroll distance to your preference
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 50);
     };
 
-    // Listen to the scroll event
     window.addEventListener("scroll", handleScroll);
-
-    // Cleanup the event listener
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Handle log out and redirect
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/login"); // Redirect to login page after logging out
+  };
 
   return (
     <nav
@@ -35,39 +35,45 @@ const Navbar = () => {
     >
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
-        <Link href="/">
-          <Image
-            src={logo}
-            alt="TaskQue Logo"
-            width={120}
-            height={80}
-            className="cursor-pointer"
-          />
+        <Link href="/" passHref>
+          <Image src="/logo2.svg" alt="TaskVerse Logo" width={120} height={80} priority />
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/features" className="text-white hover:text-orange-500">
-            Features
-          </Link>
-          <Link href="/pricing" className="text-white hover:text-orange-500">
-            Pricing
-          </Link>
-          <Link href="/support" className="text-white hover:text-orange-500">
-            Support
-          </Link>
-          <Link href="/blog" className="text-white hover:text-orange-500">
-            Blog
-          </Link>
-          <Link href="/login" className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600">
-            Log In
-          </Link>
+          {["Features", "Pricing", "Support", "Blog"].map((item) => (
+            <Link key={item} href={`/${item.toLowerCase()}`} passHref>
+              <span className="text-white hover:text-orange-500">{item}</span>
+            </Link>
+          ))}
+          
+          {/* Conditional Login/Logout */}
+          {!session ? (
+            <Link href="/login" passHref>
+              <span className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600">
+                Log In
+              </span>
+            </Link>
+          ) : (
+            <>
+              <Link href="/taskControl" passHref>
+                <span className="text-white hover:text-orange-500">Manage Task</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600"
+              >
+                Log Out
+              </button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
         <button
           className="md:hidden text-white focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
         >
           ☰
         </button>
@@ -76,21 +82,37 @@ const Navbar = () => {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden flex flex-col bg-blue-800 p-4 space-y-4">
-          <Link href="/features" className="text-white">
-            Features
-          </Link>
-          <Link href="/pricing" className="text-white">
-            Pricing
-          </Link>
-          <Link href="/support" className="text-white">
-            Support
-          </Link>
-          <Link href="/blog" className="text-white">
-            Blog
-          </Link>
-          <Link href="/login" className="bg-orange-500 px-4 py-2 text-white rounded-lg">
-            Log In
-          </Link>
+          {["Features", "Pricing", "Support", "Blog"].map((item) => (
+            <Link key={item} href={`/${item.toLowerCase()}`} passHref>
+              <span className="text-white" onClick={() => setIsOpen(false)}>
+                {item}
+              </span>
+            </Link>
+          ))}
+          
+          {/* Conditional Login/Logout for Mobile */}
+          {!session ? (
+            <Link href="/login" passHref>
+              <span className="bg-orange-500 px-4 py-2 text-white rounded-lg" onClick={() => setIsOpen(false)}>
+                Log In
+              </span>
+            </Link>
+          ) : (
+            <>
+              <Link href="/manage-task" passHref>
+                <span className="text-white" onClick={() => setIsOpen(false)}>Manage Task</span>
+              </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false); // Close the mobile menu after logging out
+                }}
+                className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600"
+              >
+                Log Out
+              </button>
+            </>
+          )}
         </div>
       )}
     </nav>

@@ -23,11 +23,14 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log("Redirecting to:", baseUrl);
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/taskControl`; 
+      console.log("Redirecting to:", url);
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/taskControl`;
     },
+  },
+  pages: {
+    signIn: "/login", // Ensure your login page exists
   },
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
