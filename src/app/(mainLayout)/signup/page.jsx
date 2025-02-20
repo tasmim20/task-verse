@@ -1,56 +1,66 @@
-"use client"; // Important: This ensures that the component is rendered on the client side.
-
+"use client";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import Image from "next/image";
-import WorkImage from "../.././../../public/account-bg.jpg";
-import orImg from "../.././../../public/apple-touch-icon.png";
+import WorkImage from "../../../../public/account-bg.jpg";
+import orImg from "../../../../public/apple-touch-icon.png";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // For redirection
-import { toast } from "react-hot-toast"; // For toast notifications
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 const SignupPage = () => {
+  // ✅ Ensure this state is defined!
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
-    confirmPassword: "",
+ 
   });
+
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); // This should work now as the component is client-side
+  const router = useRouter();
 
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validate password confirmation
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
-      setIsLoading(false);
-      return;
-    }
 
     try {
-      // Call your backend signup API (replace with actual API call)
-      // const response = await axios.post("/api/signup", formData);
-      // For now, assume signup is successful:
+      const res = await fetch("http://localhost:7000/api/auth/register", { // ✅ Fixed API route
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
+      if (!res.ok) {
+        const errorText = await res.text(); // Handle non-JSON errors
+        throw new Error(errorText);
+      }
+
+      const data = await res.json();
+      console.log(data);
       toast.success("Account created successfully!");
-      setIsLoading(false);
-      router.push("/login"); // Redirect to login page after successful signup
+      router.push("/login"); // Redirect to login page
     } catch (error) {
-      toast.error("Something went wrong. Please try again!");
+      console.error("Signup Error:", error);
+      toast.error(error.message || "Something went wrong!");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -61,7 +71,7 @@ const SignupPage = () => {
       style={{ backgroundImage: `url(${WorkImage.src})` }}
     >
       <div className="relative border border-white p-8 md:p-12 lg:p-12 w-full max-w-lg md:max-w-2xl lg:max-w-3xl">
-        <h2 className="text-3xl font-semibold text-center text-white mb-6 md:mb-8">
+        <h2 className="text-3xl font-semibold text-center text-white mb-6">
           Create an Account
         </h2>
 
@@ -71,7 +81,7 @@ const SignupPage = () => {
             <input
               type="text"
               name="fullName"
-              value={formData.fullName}
+              value={formData.fullName} // ✅ Now this will work
               onChange={handleChange}
               placeholder="Full Name"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
@@ -95,15 +105,7 @@ const SignupPage = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
               required
             />
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm Password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
-              required
-            />
+            
 
             <button
               type="submit"

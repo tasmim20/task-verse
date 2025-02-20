@@ -4,27 +4,43 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // To handle redirect after logout
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { data: session } = useSession(); // Check if session exists
-  const router = useRouter(); // For redirect after log out
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track auth state
+  const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Handle log out and redirect
+  useEffect(() => {
+    // Check for session or localStorage token
+    const token = localStorage.getItem("token");
+    if (session || token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [session]);
+
   const handleLogout = async () => {
-    await signOut();
-    router.push("/login"); // Redirect to login page after logging out
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    if (session) {
+      await signOut(); // Logout for OAuth users
+    }
+
+    setIsAuthenticated(false);
+    router.push("/login"); // Redirect to login page
   };
 
   return (
@@ -46,9 +62,9 @@ const Navbar = () => {
               <span className="text-white hover:text-orange-500">{item}</span>
             </Link>
           ))}
-          
+
           {/* Conditional Login/Logout */}
-          {!session ? (
+          {!isAuthenticated ? (
             <Link href="/login" passHref>
               <span className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600">
                 Log In
@@ -89,9 +105,9 @@ const Navbar = () => {
               </span>
             </Link>
           ))}
-          
+
           {/* Conditional Login/Logout for Mobile */}
-          {!session ? (
+          {!isAuthenticated ? (
             <Link href="/login" passHref>
               <span className="bg-orange-500 px-4 py-2 text-white rounded-lg" onClick={() => setIsOpen(false)}>
                 Log In

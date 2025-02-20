@@ -1,6 +1,9 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+
+let users = []; // Temporary in-memory storage (resets when server restarts)
 
 export const authOptions = {
   providers: [
@@ -12,23 +15,42 @@ export const authOptions = {
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const user = users.find((u) => u.email === credentials.email);
+
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        if (user.password !== credentials.password) {
+          throw new Error("Invalid password");
+        }
+
+        return user;
+      },
+    }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, token }) {
-      console.log("Session Token:", token);
-      console.log("Session User:", session.user);
-      if (token.sub) {
-        session.user.id = token.sub;
-      }
-      return session;
+    async jwt({ token, user }) {
+      if (user) token.id = user.id;
+      return token;
     },
-    async redirect({ url, baseUrl }) {
-      console.log("Redirecting to:", url);
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/taskControl`;
+    async session({ session, token }) {
+      if (token.id) session.user.id = token.id;
+      return session;
     },
   },
   pages: {
-    signIn: "/login", // Ensure your login page exists
+    signIn: "/login",
   },
 };
 

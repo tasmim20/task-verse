@@ -1,48 +1,50 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { signIn } from "next-auth/react";
-import { FaGoogle, FaGithub } from "react-icons/fa";
-import WorkImage from "../.././../../public/account-bg.jpg";
-import orImg from "../.././../../public/apple-touch-icon.png";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import useRouter for redirection
-import { toast } from "react-hot-toast"; // Import toast for notifications
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import { signIn } from "next-auth/react";
+// Import images
+import WorkImage from "../../../../public/account-bg.jpg";
+import orImg from "../../../../public/apple-touch-icon.png";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); // Initialize the router for redirection
-  const [loginSuccess, setLoginSuccess] = useState(false);
+  const router = useRouter();
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
+    try {
+      const res = await fetch("http://localhost:7000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    setIsLoading(false);
+      const data = await res.json();
+      setIsLoading(false);
 
-    if (res?.error) {
-      toast.error("Login failed. Please try again.");
-    } else {
-      toast.success("Login successful! Redirecting...");
-      setLoginSuccess(true); // Set login success flag
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed. Please try again.");
+      }
+
+      toast.success("Login successful!");
+      localStorage.setItem("token", data.token);
+      router.push("/");
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.message);
     }
   };
-
-  // Redirect after successful login
-  useEffect(() => {
-    if (loginSuccess) {
-      router.push("/"); // Redirect to homepage after success
-    }
-  }, [loginSuccess, router]); // Run only when loginSuccess changes
 
   return (
     <div
@@ -56,24 +58,24 @@ const LoginPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-[2fr_0.2fr_2fr] gap-6 items-center">
           <div className="flex flex-col space-y-4">
-            <form onSubmit={handleSubmit}>
-            <input
-  type="email"
-  placeholder="Email Address"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
-  required
-/>
-<input
-  type="password"
-  placeholder="Password"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
-  required
-/>
-              <div className="flex justify-between items-center text-sm pt-2 pb-2 text-white">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-700"
+                required
+              />
+              <div className="flex justify-between items-center text-sm text-white">
                 <label className="flex items-center">
                   <input type="checkbox" className="mr-2" /> Stay signed in
                 </label>
@@ -83,7 +85,7 @@ const LoginPage = () => {
               </div>
               <button
                 type="submit"
-                className="w-full bg-gray-900 text-white py-3  pt-2 rounded-lg hover:bg-orange-500 transition"
+                className="w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-orange-500 transition"
                 disabled={isLoading}
               >
                 {isLoading ? "Signing In..." : "Sign in"}
@@ -104,7 +106,7 @@ const LoginPage = () => {
             </button>
             <button
               className="flex items-center justify-center bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition"
-              onClick={() => signIn("github")}
+              onClick={() => (window.location.href = "/api/auth/github")}
             >
               <FaGithub className="mr-2" /> Sign in with GitHub
             </button>
@@ -116,7 +118,7 @@ const LoginPage = () => {
         </div>
 
         <div className="text-center mt-6">
-          <Link href="/signup" passHref>
+          <Link href="/signup">
             <span className="bg-orange-500 px-4 py-2 text-white rounded-lg hover:bg-orange-600">
               Create an account
             </span>
