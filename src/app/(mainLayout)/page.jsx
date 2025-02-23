@@ -4,6 +4,7 @@ import HeroImage from "../../../public/pic.jpg";
 import Features from "../components/Features/Features";
 import Workspace from "../components/Workspace/Workspace";
 import Extra from "../components/extra/extra";
+import FAQ from "../components/faqSection/faqsection";
 export default function Home() {
   return (
     <>
@@ -17,11 +18,11 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 container mx-auto px-6 p-10 rounded-lg">
-          <h1 className="text-4xl font-bold">
+          <h1 className="text-5xl font-bold">
             Productivity is at the {" "}
             <span className="text-orange-400">Heart Of Every Organization!</span>
           </h1>
-          <p className="mt-4 text-lg">
+          <p className="mt-6 text-lg">
             Enhancing your organization’s productivity is our priority.
           </p>
           <div className="mt-6 flex justify-center">
@@ -45,7 +46,8 @@ export default function Home() {
       </section>
       <Features />
       <Workspace />
-      <Extra/>
+      <Extra />
+      <FAQ></FAQ>
     </>
   );
 }

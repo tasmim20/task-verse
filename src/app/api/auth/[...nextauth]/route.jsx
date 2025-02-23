@@ -3,7 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-let users = []; // Temporary in-memory storage (resets when server restarts)
+
 
 export const authOptions = {
   providers: [

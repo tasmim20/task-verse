@@ -39,7 +39,12 @@ const LoginPage = () => {
 
       toast.success("Login successful!");
       localStorage.setItem("token", data.token);
-      router.push("/");
+      localStorage.setItem("userEmail", email); // Store email in local storage
+
+      router.push("/"); // Navigate to home page
+      setTimeout(() => {
+        window.location.reload(); // Force page reload after navigation
+      }, 100);
     } catch (error) {
       setIsLoading(false);
       toast.error(error.message);
